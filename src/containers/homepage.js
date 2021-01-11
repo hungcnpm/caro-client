@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Game from './game';
@@ -24,7 +24,12 @@ function Homepage(props) {
     const { userInfo } = props;
     const { roomInfo } = props;
     const [buttonLabel, setButtonLabel] = useState('Tìm đối thủ');
-    var iswating = false;
+    var isDisabled = false;
+
+    useEffect(()=>{
+      if(isFetching)
+        setButtonLabel('Tìm đối thủ');
+    });
     // If it is already invalidate
     if (didInvalidate) {
       //wellcome page
@@ -85,6 +90,10 @@ function Homepage(props) {
             }
             // Choose to play with AI or other user
             else {
+              // if(buttonLabel !== 'Tìm đối thủ')
+              //   setButtonLabel('Tìm đối thủ');
+              // else{
+
                 return (
                   //Home page
                   <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
@@ -113,7 +122,7 @@ function Homepage(props) {
                                 type="button"
                                 variant="primary"
                                 onClick={(e) => playWithAI(e, userInfo)}
-                                className={`mt-4 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
+                                className={`mt-4 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg ${!isDisabled ? 'hover:bg-indigo-700 transition-all duration-300':''} ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
                                 onChange={() => {}}
                               >
                                  <i className="fas fa-desktop " />
@@ -148,8 +157,12 @@ function Homepage(props) {
 
         // If first time enter, this make sure not call a loop request
         else if (!isFetching) {
+          console.log("get info");
             const token = localStorage.getItem('token');
             actions.fetchInfo(token);
+            setTimeout(() => {
+              console.log(userInfo);
+            }, 1000);
         }
          
         //Waiting page
@@ -181,10 +194,19 @@ function Homepage(props) {
     }
 
     function findRival(e, userInfo) {
-        setButtonLabel('..Đang chờ đối thủ..');
+      if(buttonLabel === '..Đang chờ đối thủ.. Bấm để hủy')
+      {
+        console.log("cancel Click");
+        setButtonLabel('Tìm đối thủ');
+        socket.emit('cancel-find-rival', userInfo);
+      }
+      else{
+        console.log("Findrival click");
+        setButtonLabel('..Đang chờ đối thủ.. Bấm để hủy');
         actions.actionTimeOut(false);
-        e.target.disabled = true;
         socket.emit('joinroom', userInfo);
+      }
+        
       }
 
     function playWithAI(e, userInfo) {
@@ -194,6 +216,7 @@ function Homepage(props) {
     }
 
     function changeInfo() {
+      console.log(userInfo);
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
         history.push('/changeinfo') ;
     }

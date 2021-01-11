@@ -30,9 +30,10 @@ function Game(props) {
     const [avatarSrc, setAvatarSrc] = useState(localStorage.getItem('avatar_' + userInfo.username) || defaultAvatar);
     const [rivalAvatarSrc, setRivalAvatarSrc] = useState(defaultAvatar);
     const [dialog, setDialog] = useState('');
-    const initialMinute = 0,initialSeconds = 20 ;
+    const initialMinute = 1,initialSeconds = 30 ;
     const [ minutes, setMinutes ] = useState(initialMinute);
     const [seconds, setSeconds ] =  useState(initialSeconds);
+    const [isOut, setIsOut] = useState(null);
     var myInterval;
     useEffect(()=>{
             myInterval = setInterval(() => {
@@ -59,11 +60,8 @@ function Game(props) {
               };
         });
     function ResetCountDownt(){
-        setMinutes(3);
-        setSeconds(11);
-    }
-    function deleteCountDown(){
-        setSeconds(0);
+        setMinutes(1);
+        setSeconds(30);
     }
     
     // Setup socket
@@ -184,6 +182,7 @@ function Game(props) {
             username={userInfo.username}
             actions={actions}
             isTimeOut = {isTimeOut}
+            isOut = {isOut}
             //handleEnd = {deleteCountDown}
           />
           <Dialog ref={el => setDialog(el)} />
@@ -310,8 +309,17 @@ function Game(props) {
     );
 
     function goHome() {
+        socket.emit('out-room', userInfo.username);
+        if(!isTimeOut && !playWithAI)
+        {
+            console.log("Log lose");
+            actions.fetchRecord(userInfo.username, 'lose');
+        }
         actions.actionRefresh();
-        window.location.href = '/';
+        path.push('/');
+        // setTimeout(() => {
+        //     path.push('/');
+        // }, 100);;
     }
 
     function checkWin(row, col, user, stepNumber) {
@@ -563,6 +571,13 @@ function Game(props) {
                 actions.actionJoinRoom(data);
             }
         });
+        socket.on('out-room', function(data){
+            if(!playWithAI && userInfo.username !== data && !isTimeOut && !winCells )
+            {
+                setIsOut(data);
+                actions.actionTimeOut(true);
+            }
+        })
         socket.on('chat', function (data) {
             if (data.message.startsWith('@@@AVATAR_SIGNAL@@@')) {
                 if (data.sender === 'ĐThủ') {
@@ -586,7 +601,7 @@ function Game(props) {
                     message: 'yes',
                 });
                 actions.actionRequest(true, `Chúc mừng bạn đã giành chiến thắng !`);
-                deleteCountDown();
+                actions.actionTimeOut(true);;
                 actions.fetchRecord(userInfo.username, 'win');
 
             }, () => {
@@ -599,7 +614,7 @@ function Game(props) {
         socket.on('surrender-result', function (data) {
             if (data.message === `yes`) {
                 actions.actionRequest(true, `Bạn đã chấp nhận thua cuộc !`);
-                deleteCountDown();
+                actions.actionTimeOut(true);
                 actions.fetchRecord(userInfo.username, 'lose');
                 if (!data.noAlert) {
                     dialog.showAlert(`Đối thủ đã chấp nhận lời đầu hàng!`);
@@ -617,7 +632,7 @@ function Game(props) {
                     message: 'yes',
                 });
                 actions.actionRequest(true, `Đã thống nhất hoà nhau !`);
-                deleteCountDown();
+                actions.actionTimeOut(true);
                 actions.fetchRecord(userInfo.username, 'draw');
             }, () => {
                 socket.emit('ceasefire-result', {
@@ -629,7 +644,7 @@ function Game(props) {
         socket.on('ceasefire-result', function (data) {
             if (data.message === 'yes') {
                 actions.actionRequest(true, `Đã thống nhất hoà nhau !`);
-                deleteCountDown();
+                actions.actionTimeOut(true);
                 actions.fetchRecord(userInfo.username, 'draw');
                 if (!data.noAlert) {
                     dialog.showAlert(`Đối thủ đã chấp nhận hoà!`);
@@ -698,7 +713,7 @@ function Game(props) {
                 dialog.showAlert(`Đối thủ không đồng ý!`);
             }
         });
-
+        
         // Reconnect if browser refresh
         if (!socket.joinroom) {
             socket.joinroom = true;
