@@ -1,0 +1,71 @@
+.Login {
+    padding: 60px 0;
+}
+
+.Login form {
+    margin: 0 auto;
+    max-width: 320px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.App-logo-login {
+    animation: App-logo-spin infinite 20s linear;
+    height: 25vmin;
+    pointer-events: none;
+    margin-left: 60px;
+}
+
+.status-login {
+    color: rgb(60, 206, 91);
+    font: 20px 'Courier New', Courier, monospace;
+    margin-bottom: 20px;
+}
+.left{
+    margin-left: 30;
+}
+
+.status-login-small {
+    color: rgb(247, 115, 115);
+    font: bold 15px 'Courier New', Courier, monospace;
+    margin-bottom: 20px;
+}
+
+.link {
+    margin: 15px;
+    font: bold 15px 'Courier New', Courier, monospace;
+}
+
+.form-label {
+    color: white;
+    font: 'Courier New', Courier, monospace;
+}
+
+.input-file {
+    color: black;
+}
+
+.avatar-big {
+    width: 175px;
+    height: 175px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.facebook-login-image {
+    width: 110px;
+    height: 110px;
+}
+
+.google-login-image {
+    width: 100px;
+    height: 100px;
+}
+
+.social-button {
+    background: transparent;
+    border: none;
+    width: 125px;
+    height: 100px;
+    margin-bottom: 10px;
+}
