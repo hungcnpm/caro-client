@@ -326,7 +326,7 @@ function Game(props) {
             actions.fetchRecord(userInfo.username, 'lose');
         }
         actions.actionRefresh();
-        return <Redirect to='/'/>;
+        window.location.href = '/';
     }
 
     function checkWin(row, col, user, stepNumber) {
