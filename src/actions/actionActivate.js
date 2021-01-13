@@ -1,5 +1,6 @@
 import ActionType from '../constants/actionTypes';
 import config from '../config';
+import {toast} from 'react-toastify'
 
 export function actionActive(status, message) {
   return {
@@ -29,13 +30,20 @@ export default function fetchActive(token) {
           dispatch(
             actionActive('FAILED', 'Đã có lỗi xảy ra, vui lòng thử lại')
           );
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại!');
         }
       )
       .then(json => {
         dispatch(actionActive('SUCCESS', json.message));
+        if (json.success === true) {
+          toast.success(json.message);
+        } else {
+          toast.error(json.message);
+        }
       })
       .catch(err => {
         dispatch(actionActive('FAILED', 'Đã xảy ra lỗi, xin vui lòng thử lại'));
+        toast.error('Đã có lỗi xảy ra, vui lòng thử lại!');
       });
   };
 }

@@ -12,7 +12,7 @@ import socket from '../socket.io/socket.io';
 import authSvg from '../assests/welcome.svg';
 import { Link , useHistory} from 'react-router-dom';
 import actionTimeOut from '../actions/actionTimeOut';
-
+import {signout, getCookie} from '../helpers/auth';
 
 function Homepage(props) {
     
@@ -26,9 +26,11 @@ function Homepage(props) {
     const [buttonLabel, setButtonLabel] = useState('Tìm đối thủ');
     var isDisabled = false;
 
+    // eslint-disable-next-line
     useEffect(()=>{
       if(isFetching)
         setButtonLabel('Tìm đối thủ');
+     
     });
     // If it is already invalidate
     if (didInvalidate) {
@@ -47,7 +49,7 @@ function Homepage(props) {
                       <Link
                         className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3
            bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-1"
-                        to="/login"
+                        to= "/login"
                       >
                         <i className="fas fa-sign-in-alt fa 1x w-6  -ml-2 text-indigo-500" />
                         <span className="ml-4">Đăng nhập</span>
@@ -90,9 +92,6 @@ function Homepage(props) {
             }
             // Choose to play with AI or other user
             else {
-              // if(buttonLabel !== 'Tìm đối thủ')
-              //   setButtonLabel('Tìm đối thủ');
-              // else{
 
                 return (
                   //Home page
@@ -110,22 +109,26 @@ function Homepage(props) {
                               <button
                                 type="button"
                                 variant="danger"
-                                onClick={(e) => findRival(e, userInfo)}
+                                onClick={e => findRival(e, userInfo)}
                                 className={`mt-4 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
                                 onChange={() => {}}
                                 value="Tìm đối thủ"
                               >
-                                 <i className="fas fa-people-arrows " />
+                                <i className="fas fa-people-arrows " />
                                 <span className="ml-3">{buttonLabel}</span>
                               </button>
                               <button
                                 type="button"
                                 variant="primary"
-                                onClick={(e) => playWithAI(e, userInfo)}
-                                className={`mt-4 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg ${!isDisabled ? 'hover:bg-indigo-700 transition-all duration-300':''} ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
+                                onClick={e => playWithAI(e, userInfo)}
+                                className={`mt-4 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg ${
+                                  !isDisabled
+                                    ? 'hover:bg-indigo-700 transition-all duration-300'
+                                    : ''
+                                } ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
                                 onChange={() => {}}
                               >
-                                 <i className="fas fa-desktop " />
+                                <i className="fas fa-desktop " />
                                 <span className="ml-3">Chơi với AI</span>
                               </button>
                               <button
@@ -134,7 +137,7 @@ function Homepage(props) {
                                 className={`mt-4 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
                                 onChange={() => {}}
                               >
-                                 <i className="fas fa-user-edit  w-6  -ml-2" />
+                                <i className="fas fa-user-edit  w-6  -ml-2" />
                                 <span className="ml-3">Cập nhật thông tin</span>
                               </button>
                               <button
@@ -157,8 +160,7 @@ function Homepage(props) {
 
         // If first time enter, this make sure not call a loop request
         else if (!isFetching) {
-          console.log("get info");
-            const token = localStorage.getItem('token');
+            const token = getCookie('token');
             actions.fetchInfo(token);
             setTimeout(() => {
               console.log(userInfo);
@@ -188,7 +190,7 @@ function Homepage(props) {
     }
     
     function logOut() {
-        localStorage.setItem('token', null);
+        signout();
         history.push('/login');
         actions.actionRefresh();
     }

@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { Link , useHistory} from 'react-router-dom';
+import { Link , Redirect} from 'react-router-dom';
 import '../login/css/login.css';
 import axios from 'axios';
 import defaultAvatar from '../../images/boy.png'
 import authSvg from '../../assests/update.svg';
-
+import {isAuth} from '../../helpers/auth';
+import { ToastContainer, toast } from 'react-toastify';
 function Info(props) {
-  const history = useHistory();
-    const { message } = props;
     const { actions } = props;
-
     const [oldPassword, setOldPassword] = useState('');
     const [password, setPassword] = useState('');
     const [repassword, setRepassword] = useState('');
@@ -19,11 +17,18 @@ function Info(props) {
     const [imgSrc, setImgSrc] = useState(localStorage.getItem('avatar_' + (userInfo ? userInfo.username : '')) || defaultAvatar);
     
     localStorage.setItem('userInfo', null);
-    if (!userInfo) {
-        history.push('/login');
-        return;
-    }
     
+    
+      if (!userInfo) {
+        if (isAuth()) {
+          return <Redirect to='/' />
+        }
+        return <Redirect to='/login' />
+      }
+      
+    
+    
+
     // If local storage has no avatar link
     if (imgSrc === defaultAvatar) {
         getAvatar();
@@ -40,17 +45,20 @@ function Info(props) {
     function handleSubmit(event) {
         event.preventDefault();
         if (password !== repassword) {
-            alert('Mật khẩu mới không trùng với nhau');
+            toast.error('Mật khẩu mới không trùng với nhau');
         }
         else {
             actions.fetchChangeInfo(userInfo.username, oldPassword, password, userInfo.email, userInfo.fullname);
+              setOldPassword('');
+              setPassword('');
+              setRepassword('');
         }
     }
 
     function uploadImage(e) {
 
         if (file === '') {
-            alert('Xin vui lòng chọn ảnh trước');
+            toast.error('Xin vui lòng chọn ảnh trước');
             return;
         }
 
@@ -76,13 +84,14 @@ function Info(props) {
             getAvatar();
         }).catch(err => {
             console.log(err);
-            alert('Không thể đăng ảnh, vui lòng thử lại');
+            toast.error('Không thể đăng ảnh, vui lòng thử lại');
         });
     }
   
     return (
 
       <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
+        <ToastContainer/>
         <div className="max-w-screen-xl m-10 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
           <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
             <div className="flex flex-col items-center">
@@ -184,7 +193,6 @@ function Info(props) {
                   </button>
                 </div>
                 <div className="my-12 border-b text-center">
-                  <p className="status-login-small">{message}</p>
                   <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                     Hoặc về trang chủ
                   </div>
@@ -228,6 +236,7 @@ function Info(props) {
             console.log(err);
         });
     }
+
 }
 
 export default Info;

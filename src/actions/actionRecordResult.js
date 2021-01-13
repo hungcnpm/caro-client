@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import ActionType from '../constants/actionTypes';
 import config from '../config';
-
+import { getCookie } from '../helpers/auth'
 
 export function actionRecordResult( status) {
     return {
@@ -12,7 +12,7 @@ export function actionRecordResult( status) {
 export default function fetchRecord(username, result){
     return dispatch => {
         
-        const token = localStorage.getItem('token');
+        const token = getCookie('token');
         const bearerToken = 'Bearer ' + token;
         return fetch(config['server-domain'] + 'users/result', {
             method: 'POST',

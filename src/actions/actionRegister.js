@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import ActionType from '../constants/actionTypes';
 import config from '../config';
-
+import {toast} from 'react-toastify'
 export function actionRegister(status, message) {
     return {
         type: ActionType.REGISTER,
@@ -34,14 +34,22 @@ export default function fetchRegister(username, password, email, fullname) {
             error => {
                 console.log('An error occurred.', error);
                 dispatch(actionRegister('FAILED', 'Đã có lỗi xảy ra, vui lòng thử lại'));
+                toast.error('Đã có lỗi xảy ra, vui lòng thử lại');
             }
         )
         .then(json => {
             dispatch(actionRegister('SUCCESS', json.message));
+            if(json.success === true){
+                toast.success(json.message);
+            }
+            else{
+                toast.error(json.message);
+            }
             
         })
         .catch(err => {
             dispatch(actionRegister('FAILED', 'Đã có lỗi xảy ra, vui lòng thử lại'));
+            toast.error('Đã có lỗi xảy ra, vui lòng thử lại');
         })
     }
   }

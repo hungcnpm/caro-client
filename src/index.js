@@ -18,6 +18,7 @@ import './css/index.css';
 import Activate from './containers/activate'
 import  ForgetPassword from './containers/forgetPassword'
 import ResetPassword from './containers/resetPassword'
+import 'react-toastify/dist/ReactToastify.css';
 // Function save state
 function saveToLocalStorage(state) {
     try {

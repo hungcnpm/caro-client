@@ -10,7 +10,7 @@ import socket from '../../socket.io/socket.io';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import defaultAvatar from '../../images/boy.png'
 import axios from 'axios';
-import {useHistory } from 'react-router-dom';
+import {useHistory, Redirect } from 'react-router-dom';
 
 function Game(props) {
 
@@ -35,13 +35,15 @@ function Game(props) {
     const [seconds, setSeconds ] =  useState(initialSeconds);
     const [isOut, setIsOut] = useState(null);
     var myInterval;
+    
     useEffect(()=>{
+            // eslint-disable-next-line
             myInterval = setInterval(() => {
                 
                 if (seconds > 0) {
                     setSeconds(seconds - 1);
                 }
-                if (seconds === 0) {
+                if (seconds === 1) {
                     if (minutes === 0) {
                         if(!winCells)
                         {
@@ -121,7 +123,8 @@ function Game(props) {
                     className='board-button'>{content}</Button>
             </li>
         )
-
+        
+        
         // Push head or tail depends on sort mode
         if (winCells && move > 0) {
             // Invisible moves when match is finish
@@ -129,6 +132,11 @@ function Game(props) {
         else if (needToDisable && message && !message.startsWith("...") && move > 0) {
             // Invisible moves when match is finish
         }
+        else if((isTimeOut || isOut) && move >0){
+            // Invisible moves when match is finish
+        }
+        
+        
         else {
             if (accendingMode) {
                 moves.push(currentMove);
@@ -146,7 +154,7 @@ function Game(props) {
     if (ourname !== roomInfo.playerX) {
         isPlayerX = ourname !== roomInfo.playerO;
     }
-    var rivalname, rivalUsername, rivalWin, rivalDraw, rivalLose;
+    var rivalname, rivalWin, rivalDraw, rivalLose;
     rivalname = isPlayerX ? roomInfo.playerO : roomInfo.playerX;
     //check if play wit bot
     if(rivalname === 'Bot'){
@@ -155,7 +163,6 @@ function Game(props) {
     //set the rival information
     else{
         if(rivalname === roomInfo.playerX){
-            rivalUsername = roomInfo.playerXUsername;
             rivalWin = roomInfo.playerXWin;
             rivalDraw = roomInfo.playerXDraw;
             rivalLose = roomInfo.playerXLose;
@@ -164,7 +171,6 @@ function Game(props) {
             rivalWin = roomInfo.playerOWin;
             rivalDraw = roomInfo.playerODraw;
             rivalLose = roomInfo.playerOLose;
-            rivalUsername = roomInfo.playerOUsername;
         }
     }
 
@@ -212,6 +218,7 @@ function Game(props) {
                   </Button>
                 </Card.Body>
               </Card>
+              {/* Time out */}
               <div hidden = {isTimeOut || winCells}>
                 {minutes === 0 && seconds === 0 ? null : (
                   <h1 className = {`count-down ${seconds > 10 ? `count-down-safe` : `count-down-danger` }`}>
@@ -241,25 +248,28 @@ function Game(props) {
                     Thắng:{rivalWin} Hòa:{rivalDraw} Bại:{rivalLose}
                   </p>
                   <Button
+                    hidden = {playWithAI}
                     className="logout-button"
                     variant="info"
                     onClick={() => requestSurrender()}
-                    disabled={needToDisable || playWithAI}
+                    disabled={needToDisable }
                   >
                     Đầu hàng
                   </Button>
                   &nbsp;&nbsp;
                   <Button
+                    hidden = {playWithAI}
                     className="logout-button"
                     variant="info"
                     onClick={() => requestCeasefire()}
-                    disabled={needToDisable || playWithAI}
+                    disabled={needToDisable }
                   >
                     Xin hoà
                   </Button>
                 </Card.Body>
               </Card>
             </div>
+            
             <div>
               <Board
                 winCells={winCells}
@@ -268,6 +278,7 @@ function Game(props) {
                 handleClick={(i, j) => userClick(i, j)}
               />
             </div>
+            
             <div className={playWithAI ? 'right' : ''}>
               {/* Change sort mode */}
               <Button
@@ -277,6 +288,7 @@ function Game(props) {
                 {sortMode}
               </Button>
               <br></br>
+              {/* move history */}
               <ScrollToBottom
                 className="scroll-view"
                 mode={accendingMode ? `bottom` : `top`}
@@ -295,7 +307,7 @@ function Game(props) {
                         className="input-message"
                         placeholder="Nhập và nhấn Enter"
                         value={chatMessage}
-                        disabled={needToDisable}
+                        disabled={isOut}
                         onChange={e => setChatMessage(e.target.value)}
                       ></FormControl>
                     </form>
@@ -310,16 +322,13 @@ function Game(props) {
 
     function goHome() {
         socket.emit('out-room', userInfo.username);
-        if(!isTimeOut && !playWithAI)
+        if(!isTimeOut && !playWithAI && !winCells)
         {
             console.log("Log lose");
             actions.fetchRecord(userInfo.username, 'lose');
         }
         actions.actionRefresh();
-        path.push('/');
-        // setTimeout(() => {
-        //     path.push('/');
-        // }, 100);;
+        window.location.href='/';
     }
 
     function checkWin(row, col, user, stepNumber) {
@@ -574,8 +583,10 @@ function Game(props) {
         socket.on('out-room', function(data){
             if(!playWithAI && userInfo.username !== data && !isTimeOut && !winCells )
             {
+                console.log('out');
                 setIsOut(data);
                 actions.actionTimeOut(true);
+                rivalname = 'DISCONNECTED';
             }
         })
         socket.on('chat', function (data) {

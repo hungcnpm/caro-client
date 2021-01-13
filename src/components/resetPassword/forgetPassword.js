@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import authSvg from '../../assests/forget.svg';
 import { Link } from 'react-router-dom';
 import '../login/css/login.css';
+import { ToastContainer } from 'react-toastify';
 
 
 const ForgetPassword = (props) => {
   
   const [email, setEmail] = useState('');
-  const { message } = props;
   const { actions } = props;
 
  
@@ -20,11 +20,13 @@ function handleSubmit(event) {
   event.preventDefault();
   if (email) {
     actions.fetchForgetPassword(email);
+    setEmail('');
   }
 };
   
   return (
     <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
+      <ToastContainer/>
       <div className='max-w-screen-xl m-20 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1'>
         <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
           <div className='mt-12 flex flex-col items-center'>
@@ -53,7 +55,6 @@ function handleSubmit(event) {
                   <span className='ml-3'>Reset lại mật khẩu</span>
                 </button>
                 <div className="my-12 border-b text-center">
-                <p className='status-login-small'>{message}</p>
                   <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                     Hoặc đăng nhập
                   </div>

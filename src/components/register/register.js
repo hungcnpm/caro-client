@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import '../login/css/login.css';
 import authSvg from '../../assests/auth.svg';
+import {isAuth} from '../../helpers/auth';
+import { ToastContainer, toast } from 'react-toastify';
 
 function Register(props) {
     const [username, setUsername] = useState('');
@@ -10,7 +12,6 @@ function Register(props) {
     const [email, setEmail] = useState('');
     const [fullname, setFullname] = useState('');
 
-    const { message } = props;
     const { actions } = props;
   
     function validateForm() {
@@ -26,15 +27,22 @@ function Register(props) {
     function handleSubmit(event) {
         event.preventDefault();
         if (password !== repassword) {
-            alert('Mật khẩu không trùng với nhau');
+            toast.error('Mật khẩu không trùng với nhau');
         }
         else {
-            actions.fetchRegister(username, password, email, fullname);
+          setEmail('');
+          setFullname('');
+          setPassword('');
+          setRepassword('');
+          setUsername('');
+          actions.fetchRegister(username, password, email, fullname);
         }
     }
 
     return (
       <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
+        {isAuth() ? <Redirect to='/' /> : null}
+        <ToastContainer />
         <div className="max-w-screen-xl m-10 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
           <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
             <div className="mt-8 flex flex-col items-center">
@@ -92,7 +100,6 @@ function Register(props) {
                   </button>
                 </div>
                 <div className="my-12 border-b text-center">
-                <p className='status-login-small'>{message}</p>
                   <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                     Hoặc đăng nhập
                   </div>

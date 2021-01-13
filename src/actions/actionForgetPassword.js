@@ -1,5 +1,6 @@
 import fetch from 'cross-fetch';
 import ActionType from '../constants/actionTypes';
+import {toast} from 'react-toastify'
 import config from '../config';
 
 export function actionForgetPassword(status, message) {
@@ -31,15 +32,23 @@ export default function fetchForgetPassword(email) {
             error => {
                 console.log('An error occurred.', error);
                 dispatch(actionForgetPassword('FAILED', 'Đã có lỗi xảy ra, vui lòng thử lại'));
+                toast.error('Đã có lỗi xảy ra, vui lòng thử lại');
             }
         )
         .then(json => {
                 // Redirect immediately, no need to dispatch SUCCESS action
                 dispatch(actionForgetPassword('SUCCESS', json.message));
+                if(json.success === true){
+                    toast.success(json.message);
+                }
+                else{
+                    toast.error(json.message);
+                }
         })
         .catch(err => {
             console.log('An error occurred 1.', err);
             dispatch(actionForgetPassword('FAILED', 'Đã có lỗi xảy ra, vui lòng thử lại'));
+            toast.error('Đã có lỗi xảy ra, vui lòng thử lại');
         })
     }
   }

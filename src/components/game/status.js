@@ -18,7 +18,11 @@ function Status(props) {
     let message;
 
     if (rivalname === 'DISCONNECTED') {
-      message = 'Đối thủ đã thoát khỏi phòng chơi !';
+      if(!winCells){
+        message = `Đối thủ đã thoát. Chúc mừng bạn đã giành chiến thắng !`;
+      }
+      else
+        message = 'Đối thủ đã thoát khỏi phòng chơi !';
     } else if (messages) {
       message = messages;
     } else if (isTimeOut && !winCells) {
@@ -26,14 +30,7 @@ function Status(props) {
         if(username !== isOut && !playWithAI){
           actions.fetchRecord(username, 'win');
           console.log("Win is out");
-          message = `Đối thủ đã thoát. Chúc mừng bạn đã giành chiến thắng !`;
         }
-        // else {
-        //   if (!playWithAI) {
-        //     actions.fetchRecord(username, 'lose');
-        //   }
-        //   message = `Rất tiếc bạn đã thua vì thoát trận !`;
-        // }
       } else {
         const winner =
           props.nextMove === Config.xPlayer ? Config.xPlayer : Config.oPlayer;
@@ -45,7 +42,6 @@ function Status(props) {
           if (!playWithAI) {
             actions.fetchRecord(username, 'win');
           }
-          console.log("Win time");
           message = `Chúc mừng bạn đã giành chiến thắng !`;
         } else {
           if (!playWithAI) {
@@ -73,6 +69,7 @@ function Status(props) {
         }
         message = `Chúc mừng bạn đã giành chiến thắng !`;
       }
+      
     } else {
       message = `Lượt đi kế tiếp: ${props.nextMove}`;
     }

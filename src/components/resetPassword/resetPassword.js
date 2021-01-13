@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import authSvg from '../../assests/reset.svg';
 import { Link } from 'react-router-dom';
 import '../login/css/login.css';
-
+import {ToastContainer, toast} from 'react-toastify'
 const ResetPassword = (props) => {
   const [password, setPassword]= useState('');
   const [repassword, setRepassword] = useState('');
@@ -14,7 +14,6 @@ const ResetPassword = (props) => {
     }
   }, [props.match.params.token]);
 
-  const { message } = props;
   const { actions } = props;
 
   function validateForm() {
@@ -24,7 +23,7 @@ const ResetPassword = (props) => {
   const handleSubmit = e => {
     e.preventDefault();
     if (password !== repassword) {
-      alert('Mật khẩu không trùng với nhau');
+      toast.error('Mật khẩu không trùng với nhau');
     } else {
       actions.fetchResetPassword(token, password);
       setPassword('');
@@ -33,6 +32,7 @@ const ResetPassword = (props) => {
   };
   return (
     <div className='min-h-screen bg-gray-100 text-gray-900 flex justify-center'>
+      <ToastContainer/>
       <div className='max-w-screen-xl m-20 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1'>
         <div className='lg:w-1/2 xl:w-5/12 p-6 sm:p-12'>
           <div className='mt-12 flex flex-col items-center'>
@@ -68,7 +68,6 @@ const ResetPassword = (props) => {
                   <span className='ml-3'>Đổi mật khẩu</span>
                 </button>
                 <div className="my-10 border-b text-center">
-                <p className="status-login-small">{message}</p>
                 <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                   Hoặc đăng nhập
                 </div>

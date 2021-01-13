@@ -1,5 +1,6 @@
 import ActionType from '../constants/actionTypes';
 import config from '../config';
+import {toast} from 'react-toastify'
 
 export function actionResetPassword(status, message) {
   return {
@@ -30,15 +31,22 @@ export default function fetchResetPassword(token, password) {
           dispatch(
             actionResetPassword('FAILED', 'Đã có lỗi xảy ra, vui lòng thử lại')
           );
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại');
         }
       )
       .then(json => {
         dispatch(actionResetPassword('SUCCESS', json.message));
+        if (json.success === true) {
+          toast.success(json.message);
+        } else {
+          toast.error(json.message);
+        }
       })
       .catch(err => {
         dispatch(
           actionResetPassword('FAILED', 'Đã xảy ra lỗi, xin vui lòng thử lại')
         );
+        toast.error('Đã có lỗi xảy ra, vui lòng thử lại');
       });
   };
 }
