@@ -4,10 +4,10 @@ var exports_1 = {
     'server-domain': '//localhost:3000/'
 };
 
-// These exports are for uploading to heroku
-// var exports_2 = {
-//     'client-domain': 'https://btgk-1612422.herokuapp.com/',
-//     'server-domain': 'https://btcn06-1612422.herokuapp.com/'
-// };
+//These exports are for uploading to heroku
+var exports_2 = {
+    'client-domain': 'https://caro-1612234.herokuapp.com/',
+    'server-domain': 'https://caro-1612234-server.herokuapp.com/'
+};
 
-export default exports_1;
+export default exports_2;
