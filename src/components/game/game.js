@@ -14,7 +14,6 @@ import {useHistory, Redirect } from 'react-router-dom';
 
 function Game(props) {
 
-    const path = useHistory();
     const { actions } = props;
     const { history } = props;
     const { stepNumber } = props;
@@ -221,7 +220,7 @@ function Game(props) {
               {/* Time out */}
               <div hidden = {isTimeOut || winCells}>
                 {minutes === 0 && seconds === 0 ? null : (
-                  <h1 className = {`count-down ${seconds > 10 ? `count-down-safe` : `count-down-danger` }`}>
+                  <h1 className = {`count-down ${(seconds < 10 && minutes === 0) ? `count-down-danger` : `count-down-safe` }`}>
                     {' '}
                     {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
                   </h1>
@@ -324,11 +323,10 @@ function Game(props) {
         socket.emit('out-room', userInfo.username);
         if(!isTimeOut && !playWithAI && !winCells)
         {
-            console.log("Log lose");
             actions.fetchRecord(userInfo.username, 'lose');
         }
         actions.actionRefresh();
-        window.location.href='/';
+        return <Redirect to='/'/>;
     }
 
     function checkWin(row, col, user, stepNumber) {
@@ -583,10 +581,8 @@ function Game(props) {
         socket.on('out-room', function(data){
             if(!playWithAI && userInfo.username !== data && !isTimeOut && !winCells )
             {
-                console.log('out');
                 setIsOut(data);
                 actions.actionTimeOut(true);
-                rivalname = 'DISCONNECTED';
             }
         })
         socket.on('chat', function (data) {
@@ -736,6 +732,7 @@ function Game(props) {
             if (data) {
                 data.justReconnect = true;
                 actions.actionJoinRoom(data);
+                ResetCountDownt();
             }
 
             // Else reset

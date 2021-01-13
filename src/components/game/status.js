@@ -18,10 +18,7 @@ function Status(props) {
     let message;
 
     if (rivalname === 'DISCONNECTED') {
-      if(!winCells){
-        message = `Đối thủ đã thoát. Chúc mừng bạn đã giành chiến thắng !`;
-      }
-      else
+      
         message = 'Đối thủ đã thoát khỏi phòng chơi !';
     } else if (messages) {
       message = messages;
