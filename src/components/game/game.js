@@ -99,7 +99,7 @@ function Game(props) {
 
     // Setup disable state for components
     const oneIsDisconnect = roomInfo.playerO === 'DISCONNECTED' || roomInfo.playerX === 'DISCONNECTED';
-    const needToDisable = winCells || oneIsDisconnect || isFetching || isTimeOut;
+    const needToDisable = winCells || oneIsDisconnect || isFetching || isTimeOut || isOut;
     var playWithAI = false;
 
     // Setup board game
@@ -181,7 +181,7 @@ function Game(props) {
           <Status
             nextMove={nextMove}
             winCells={winCells}
-            rivalname={roomInfo.playerO}
+            rivalname={rivalname}
             messages={message}
             isPlayerX={isPlayerX}
             playWithAI={playWithAI}
