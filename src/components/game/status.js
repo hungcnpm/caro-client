@@ -19,15 +19,15 @@ function Status(props) {
 
     if (rivalname === 'DISCONNECTED') {
       
-        message = 'Đối thủ đã thoát khỏi phòng chơi !';
+        message = 'Đối thủ bị mất kết nối!';
     } else if (messages) {
       message = messages;
     } else if (isTimeOut && !winCells) {
       if (isOut) {
         if(username !== isOut && !playWithAI){
           actions.fetchRecord(username, 'win');
-          console.log("Win is out");
         }
+        message = 'Đối thủ đã thoát. Chúc mừng bạn đã giành được chiến thắng';
       } else {
         const winner =
           props.nextMove === Config.xPlayer ? Config.xPlayer : Config.oPlayer;
