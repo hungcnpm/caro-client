@@ -17,7 +17,7 @@ function Status(props) {
     //const {handleEnd} = props;
     let message;
 
-    if (rivalname === 'DISCONNECTED') {
+    if (rivalname === 'DISCONNECTED' && !isTimeOut) {
       
         message = 'Đối thủ bị mất kết nối!';
     } else if (messages) {
