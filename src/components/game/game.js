@@ -246,6 +246,9 @@ function Game(props) {
                   <p hidden={playWithAI} className="card-text">
                     Thắng:{rivalWin} Hòa:{rivalDraw} Bại:{rivalLose}
                   </p>
+                  <p hidden={playWithAI} className="card-text">
+                    Tỉ lệ thắng: {Math.round(rivalWin/(rivalWin +rivalDraw+rivalLose)*100)}%
+                  </p>
                   <Button
                     hidden = {playWithAI}
                     className="logout-button"
